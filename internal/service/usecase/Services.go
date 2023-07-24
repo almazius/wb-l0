@@ -3,7 +3,9 @@ package usecase
 import (
 	"github.com/rs/zerolog"
 	"os"
+	"wb-l0/config"
 	"wb-l0/internal/service"
+	"wb-l0/internal/service/repository"
 )
 
 type Services struct {
@@ -12,10 +14,13 @@ type Services struct {
 	Log        zerolog.Logger
 }
 
-func NewServices() (service.IServices, error) {
+func NewServices(conf *config.Config) (service.IServices, error) {
 	s := Services{}
+	var err error
+	s.Cache = make(map[string][]byte)
 	s.Log = zerolog.New(os.Stderr)
-	err := s.GetUpCache()
+	s.repository, err = repository.NewPostgres(conf)
+	err = s.GetUpCache()
 	if err != nil {
 		return nil, err
 	}
@@ -46,5 +51,11 @@ func (s *Services) GetModel(id string) ([]byte, error) {
 }
 
 func (s *Services) GetUpCache() error {
+	var err error
+	s.Cache, err = s.repository.GetAllNote()
+	if err != nil {
+		return err
+	}
 
+	return nil
 }

@@ -20,6 +20,9 @@ func NewServices(conf *config.Config) (service.IServices, error) {
 	s.Cache = make(map[string][]byte)
 	s.Log = zerolog.New(os.Stderr)
 	s.repository, err = repository.NewPostgres(conf)
+	if err != nil {
+		return nil, err
+	}
 	err = s.GetUpCache()
 	if err != nil {
 		return nil, err
@@ -28,6 +31,13 @@ func NewServices(conf *config.Config) (service.IServices, error) {
 }
 
 func (s *Services) SaveModel(id string, jmodel []byte) error {
+	_, exist := s.Cache[id]
+	if exist {
+		return &service.MyError{
+			Message: "record with this key already exists",
+			Code:    401,
+		}
+	}
 	s.Cache[id] = jmodel
 	err := s.repository.AddNote(id, jmodel)
 	if err != nil {

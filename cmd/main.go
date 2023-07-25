@@ -20,7 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to start the rest server: %e", err)
 	}
-	err = server.StartServer("8080")
+	err = server.StartServer(":3000")
 	if err != nil {
 		log.Fatalf("Unable to start the rest server: %e", err)
 	}

@@ -25,9 +25,8 @@ func NewServer(conf *config.Config) (service.RestServer, error) {
 	}
 
 	s.server = fiber.New()
-
-	s.server.Get("GetModel/:ip", s.GetModel)
-	s.server.Post("", s.AddModel)
+	s.server.Get("getModel/:id", s.GetModel)
+	s.server.Post("addModel", s.AddModel)
 	return &s, nil
 }
 
@@ -41,12 +40,15 @@ func (s *FiberServer) StartServer(port string) error {
 }
 
 func (s *FiberServer) GetModel(ctx *fiber.Ctx) error {
-	id := ctx.Get("id", "")
+	id := ctx.Params("id", "")
 	model, err := s.service.GetModel(id)
 	if err != nil {
 		return err
 	} else {
-		ctx.JSON(model)
+		err = ctx.Send(model)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -56,7 +58,12 @@ func (s *FiberServer) AddModel(ctx *fiber.Ctx) error {
 	id, err := middleware.CheckModel(object)
 	if err != nil {
 		s.Log.Error().Timestamp().Err(err)
+		return err
 	}
-	s.service.SaveModel(id, object)
+	err = s.service.SaveModel(id, object)
+	if err != nil {
+		s.Log.Error().Timestamp().Err(err)
+		return err
+	}
 	return nil
 }

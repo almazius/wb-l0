@@ -30,7 +30,7 @@ func NewServices(conf *config.Config) (service.IServices, error) {
 	return &s, nil
 }
 
-func (s *Services) SaveModel(id string, jmodel []byte) error {
+func (s *Services) SaveModel(id string, jsonModel []byte) error {
 	_, exist := s.Cache[id]
 	if exist {
 		return &service.MyError{
@@ -38,8 +38,8 @@ func (s *Services) SaveModel(id string, jmodel []byte) error {
 			Code:    401,
 		}
 	}
-	s.Cache[id] = jmodel
-	err := s.repository.AddNote(id, jmodel)
+	s.Cache[id] = jsonModel
+	err := s.repository.AddNote(id, jsonModel)
 	if err != nil {
 		return err
 	}

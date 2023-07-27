@@ -2,25 +2,31 @@ package service
 
 import (
 	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/nats-io/stan.go"
 	"time"
 )
 
-type Repository interface {
-	GetAllNote() (map[string][]byte, error)
-	AddNote(id string, jmodel []byte) error
+type RestServer interface {
+	StartServer(port string) error
+	GetModel(ctx *fiber.Ctx) error
+	AddModel(ctx *fiber.Ctx) error
+}
+
+type Broker interface {
+	Subscribe(topic string, magicFunc func(msg *stan.Msg)) error
+	Handler(msg *stan.Msg)
 }
 
 type IServices interface {
-	SaveModel(id string, jmodel []byte) error
+	SaveModel(id string, jsonModel []byte) error
 	GetModel(id string) ([]byte, error)
 	GetUpCache() error
 }
 
-type RestServer interface {
-	StartServer(port string) error
-}
-
-type Event struct {
+type Repository interface {
+	GetAllNote() (map[string][]byte, error)
+	AddNote(id string, jsonModel []byte) error
 }
 
 type Model struct {

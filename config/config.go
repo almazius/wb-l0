@@ -7,12 +7,17 @@ import (
 
 type Config struct {
 	Postgres struct {
-		User     *string `json:"user"`
-		Password *string `json:"password"`
-		Host     *string `json:"host"`
-		Port     *string `json:"port"`
-		DbName   *string `json:"dbName"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+		Host     string `json:"host"`
+		Port     string `json:"port"`
+		DbName   string `json:"dbName"`
 	} `json:"postgres"`
+	Stan struct {
+		ClusterId string `json:"clusterId"`
+		Url       string `json:"url"`
+		Topic     string `json:"topic"`
+	}
 }
 
 func LoadConfig() (*viper.Viper, error) {

@@ -1,6 +1,10 @@
 Postgres:
-  user: "root"
-  password: "qwerty_123"
-  host: "192.168.0.48"
+  user: "almaz"
+  password: "almaz"
+  host: "127.0.0.1"
   port: "5432"
   dbName: "postgres"
+Stan:
+  url: "nats://127.0.0.1:4222"
+  clusterId: "test-cluster"
+  topic: "updates"

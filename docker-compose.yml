@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  stan:
+    image: nats-streaming:latest
+    ports:
+      - 4222:4222
+      - 8222:8222
+    command:
+      - "--cluster"
+      - "nats://0.0.0.0:6222"
+      - "--cluster_id"
+      - test-cluster
+      - "--clustered"
+      - "--cluster_bootstrap"
+      - "--cluster_log_path"
+      - /data/log
+      - "--cluster_node_id"
+      - nats-streaming-1
+      - "--cluster_raft_logging"
+      - "--debug"
+      - "--dir"
+      - /data/msg
+      - "--http_port"
+      - "8222"
+      - "--port"
+      - "4222"
+      - "--store"
+      - file
+      - "--stan_debug"
+      - "--hb_interval"
+      - 2s
+      - "--hb_fail_count"
+      - "1"
+      - "--hb_timeout"
+      - 5s
+  postgres:
+    restart: always
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: "almaz"
+      POSTGRES_PASSWORD: "almaz"
+    volumes:
+      - ./migration/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"

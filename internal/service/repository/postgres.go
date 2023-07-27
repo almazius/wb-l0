@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 	"os"
@@ -24,16 +25,19 @@ func NewPostgres(config *config.Config) (service.Repository, error) {
 		return nil, err
 	}
 
+	fmt.Println("DELL 28 str on postgres.go")
+	_, _ = conn.Exec("CREATE TABLE IF NOT EXISTS models\n(\n    order_uid text primary key,\n    model json  not null\n);")
+
 	return &Postgres{
 		Connection: conn,
 		Log:        &Log,
 	}, nil
 }
 
-func (p *Postgres) AddNote(id string, jmodel []byte) error {
-	_, err := p.Connection.Exec(`insert into models values ($1, $2)`, id, jmodel)
+func (p *Postgres) AddNote(id string, jsonModel []byte) error {
+	_, err := p.Connection.Exec(`insert into models values ($1, $2)`, id, jsonModel)
 	if err != nil {
-		p.Log.Err(err).Timestamp().Send()
+		p.Log.Error().Timestamp().Err(err).Send()
 		return err
 	}
 	return nil
@@ -54,7 +58,7 @@ func (p *Postgres) GetAllNote() (map[string][]byte, error) {
 		)
 		err = objects.Scan(&id, &json)
 		if err != nil {
-			p.Log.Error().Timestamp().Err(err)
+			p.Log.Error().Timestamp().Err(err).Send()
 			return nil, &service.MyError{
 				Message: err.Error(),
 				Code:    500,

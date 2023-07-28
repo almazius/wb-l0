@@ -3,7 +3,7 @@ Postgres:
   password: "almaz"
   host: "127.0.0.1"
   port: "5432"
-  dbName: "postgres"
+  dbName: "wb"
 Stan:
   url: "nats://127.0.0.1:4222"
   clusterId: "test-cluster"

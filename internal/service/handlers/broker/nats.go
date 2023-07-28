@@ -23,7 +23,7 @@ func NewBroker(conf *config.Config, services service.IServices) (service.Broker,
 	nc, err := nats.Connect(conf.Stan.Url)
 	if err != nil {
 		Log.Error().Err(err).Timestamp()
-		return nil, err
+		return nil, &service.MyError{Code: 502, Message: err.Error()}
 	}
 	defer nc.Close()
 
@@ -45,11 +45,11 @@ func NewBroker(conf *config.Config, services service.IServices) (service.Broker,
 }
 
 func (n *Nats) Subscribe(topic string, magicFunc func(msg *stan.Msg)) error {
-	_, err := n.Conn.Subscribe(topic, magicFunc, stan.StartWithLastReceived())
+	_, err := n.Conn.Subscribe(topic, magicFunc, stan.DurableName("almaz"))
 	if err != nil {
 		_ = n.Conn.Close()
 		n.Log.Error().Err(err).Timestamp()
-		return err
+		return &service.MyError{Code: 500, Message: err.Error()}
 	}
 	return nil
 }
@@ -66,37 +66,5 @@ func (n *Nats) Handler(msg *stan.Msg) {
 		n.Log.Error().Timestamp().Err(err).Send()
 		return
 	}
+	n.Log.Info().Str("Service", "Broker").Msgf("Broker got a new model")
 }
-
-//func NewBroker1() {
-//	nc, err := nats.Connect(nats.DefaultURL)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	defer nc.Close()
-//
-//	sc, err := stan.Connect("test-cluster", "client",
-//		stan.SetConnectionLostHandler(func(_ stan.Conn, reason error) {
-//			log.Fatalf("Connection lost, reason: %v", reason)
-//		}))
-//	if err != nil {
-//		log.Fatalf("Can't connect: %v.\nMake sure a NATS Streaming Server is running at: %s", err, nats.DefaultURL)
-//	}
-//
-//	//wg := sync.WaitGroup{}
-//	//wg.Add(1)
-//	//wg.Wait()
-//
-//	_, err = sc.Subscribe("updates", func(msg *stan.Msg) {
-//		fmt.Printf("Received a message: %s\n", string(msg.Data))
-//	}, stan.StartWithLastReceived())
-//	if err != nil {
-//		sc.Close()
-//		log.Fatal(err)
-//	}
-//	//wg.Done()
-//	//
-//	//sub.Unsubscribe()
-//	//sc.Close()
-//
-//}

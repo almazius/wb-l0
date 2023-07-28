@@ -42,5 +42,7 @@ services:
       POSTGRES_PASSWORD: "almaz"
     volumes:
       - ./migration/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./migration/migration.sql:/docker-entrypoint-initdb.d/migration.sql
+
     ports:
       - "5432:5432"

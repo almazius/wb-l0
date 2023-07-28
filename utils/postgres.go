@@ -5,6 +5,7 @@ import (
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"wb-l0/config"
+	"wb-l0/internal/service"
 )
 
 func GetConn(c *config.Config) (*sqlx.DB, error) {
@@ -16,7 +17,10 @@ func GetConn(c *config.Config) (*sqlx.DB, error) {
 		c.Postgres.DbName)
 	database, err := sqlx.Connect("pgx", connectionUrl)
 	if err != nil {
-		return nil, err
+		return nil, &service.MyError{
+			Message: err.Error(),
+			Code:    502,
+		}
 	}
 	return database, nil
 }

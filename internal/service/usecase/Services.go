@@ -50,7 +50,7 @@ func (s *Services) SaveModel(id string, jsonModel []byte) error {
 func (s *Services) GetModel(id string) ([]byte, error) {
 	el, isExist := s.Cache[id]
 	if !isExist {
-		s.Log.Error().Timestamp().Msg("Перевести: Получение записи по невалидному id")
+		s.Log.Error().Timestamp().Str("Service", "Usecase").Msg("Getting an entry by invalid id")
 		return nil, &service.MyError{
 			Message: "Cant find your model",
 			Code:    404,

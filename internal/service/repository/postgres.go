@@ -16,7 +16,6 @@ type Postgres struct {
 
 func NewPostgres(config *config.Config) (service.Repository, error) {
 	Log := zerolog.New(os.Stderr)
-	Log.Info().Timestamp().Str("Service", "Repository").Msg("Postgres log active")
 	conn, err := utils.GetConn(config)
 	if err != nil {
 		Log.Fatal().Timestamp().Err(err)

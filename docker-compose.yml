@@ -1,19 +1,19 @@
 version: "3"
 
 services:
-  wb-l0:
-    image: golang
-    build:
-      dockerfile: Dockerfile
-    depends_on:
-    - stan
-    - postgres
-#      stan:
-#        condition: service_healthy
-#      postgres:
-#        condition: service_healthy
-    ports:
-      - "8080:8080"
+#  wb-l0:
+#    image: golang
+#    build:
+#      dockerfile: Dockerfile
+#    depends_on:
+#    - stan
+#    - postgres
+##      stan:
+##        condition: service_healthy
+##      postgres:
+##        condition: service_healthy
+#    ports:
+#      - "8080:8080"
 
   stan:
     image: nats-streaming:latest

@@ -20,11 +20,6 @@ type Nats struct {
 
 func NewBroker(conf *config.Config, services service.IServices) (service.Broker, error) {
 	Log := zerolog.New(os.Stderr)
-	//nc, err := nats.Connect(conf.Stan.Url)
-	//if err != nil {
-	//	Log.Error().Err(err).Timestamp()
-	//	return nil, &service.MyError{Code: 502, Message: err.Error()}
-	//}
 	nc, err := utils.TryConnectNats(conf, 15, &Log)
 	defer nc.Close()
 

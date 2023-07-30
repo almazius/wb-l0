@@ -2,7 +2,7 @@ FROM golang:latest
 
 WORKDIR /wb/
 
-COPY . .
+COPY .. .
 
 RUN go mod download
 EXPOSE 3000

@@ -8,6 +8,7 @@ import (
 	"wb-l0/internal/service"
 )
 
+// TryConnectNats try connection on NATS
 func TryConnectNats(conf *config.Config, count int, Log *zerolog.Logger) (nc *nats.Conn, err error) {
 	for i := 1; i < count+1; i++ {
 		nc, err = nats.Connect(conf.Stan.Url)

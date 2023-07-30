@@ -8,6 +8,7 @@ import (
 	"wb-l0/internal/service"
 )
 
+// GetConn create connection on PostgresDB
 func GetConn(c *config.Config) (*sqlx.DB, error) {
 	connectionUrl := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		c.Postgres.Host,

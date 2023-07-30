@@ -83,5 +83,5 @@ type MyError struct {
 }
 
 func (err *MyError) Error() string {
-	return fmt.Sprintf("Code: %d\nMessage: %s\n", err.Code, err.Message)
+	return fmt.Sprintf("Code: %d \nMessage: %s\n", err.Code, err.Message)
 }

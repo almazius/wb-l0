@@ -14,6 +14,7 @@ type Postgres struct {
 	Log        zerolog.Logger
 }
 
+// NewPostgres Create entity service.Repository
 func NewPostgres(config *config.Config) (service.Repository, error) {
 	Log := zerolog.New(os.Stderr)
 	conn, err := utils.GetConn(config)
@@ -31,6 +32,7 @@ func NewPostgres(config *config.Config) (service.Repository, error) {
 	}, nil
 }
 
+// AddNote add note in repository
 func (p *Postgres) AddNote(id string, jsonModel []byte) error {
 	_, err := p.Connection.Exec(`insert into models values ($1, $2)`, id, jsonModel)
 	if err != nil {
@@ -43,6 +45,7 @@ func (p *Postgres) AddNote(id string, jsonModel []byte) error {
 	return nil
 }
 
+// GetAllNote return all notes from repository
 func (p *Postgres) GetAllNote() (map[string][]byte, error) {
 	models := make(map[string][]byte)
 	objects, err := p.Connection.Queryx("select * from models")

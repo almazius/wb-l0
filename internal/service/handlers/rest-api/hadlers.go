@@ -7,6 +7,7 @@ import (
 	"wb-l0/config"
 	"wb-l0/internal/service"
 	"wb-l0/internal/service/middleware"
+	"wb-l0/utils"
 )
 
 type FiberServer struct {
@@ -16,8 +17,7 @@ type FiberServer struct {
 	broker  service.Broker
 }
 
-// fix nats
-
+// NewServer Create entity service.RestServer
 func NewServer(conf *config.Config, services service.IServices) (service.RestServer, error) {
 	_ = conf // on future
 	s := FiberServer{}
@@ -35,6 +35,7 @@ func NewServer(conf *config.Config, services service.IServices) (service.RestSer
 	return &s, nil
 }
 
+// StartServer is begun listen port
 func (s *FiberServer) StartServer(port string) error {
 	err := s.server.Listen(port)
 	if err != nil {
@@ -45,32 +46,38 @@ func (s *FiberServer) StartServer(port string) error {
 	return nil
 }
 
+// GetModel handler for get model from cache
 func (s *FiberServer) GetModel(ctx *fiber.Ctx) error {
 	id := ctx.Params("id", "")
 	model, err := s.service.GetModel(id)
 	if err != nil {
-		return err
+		ctx.Status(utils.GetCodeFromMyError(err))
+		return ctx.Send([]byte(err.Error()))
 	} else {
 		err = ctx.Send(model)
 		if err != nil {
-			return &service.MyError{Code: 500, Message: err.Error()}
+			ctx.Status(500)
+			return ctx.JSON(&service.MyError{Code: 500, Message: err.Error()})
 		}
 	}
 	s.Log.Info().Str("Service", "Server api").Msgf("Server received a request to search for a model: %s", id)
 	return nil
 }
 
+// AddModel handler for add model in cache
 func (s *FiberServer) AddModel(ctx *fiber.Ctx) error {
 	object := ctx.Body()
-	id, err := middleware.CheckModel(object)
+	id, err := middleware.ProcessModel(object)
 	if err != nil {
 		s.Log.Error().Timestamp().Err(err).Send()
-		return err
+		ctx.Status(utils.GetCodeFromMyError(err))
+		return ctx.Send([]byte(err.Error()))
 	}
 	err = s.service.SaveModel(id, object)
 	if err != nil {
 		s.Log.Error().Timestamp().Err(err).Send()
-		return err
+		ctx.Status(utils.GetCodeFromMyError(err))
+		return ctx.Send([]byte(err.Error()))
 	}
 	s.Log.Info().Str("Service", "Server api").Msgf("Server received a request to add model: %s", id)
 	return nil

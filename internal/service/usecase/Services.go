@@ -14,6 +14,7 @@ type Services struct {
 	Log        zerolog.Logger
 }
 
+// NewServices Create entity service.IServices
 func NewServices(conf *config.Config) (service.IServices, error) {
 	s := Services{}
 	var err error
@@ -30,6 +31,7 @@ func NewServices(conf *config.Config) (service.IServices, error) {
 	return &s, nil
 }
 
+// SaveModel save model on cache and repository
 func (s *Services) SaveModel(id string, jsonModel []byte) error {
 	_, exist := s.Cache[id]
 	if exist {
@@ -47,6 +49,7 @@ func (s *Services) SaveModel(id string, jsonModel []byte) error {
 	return nil
 }
 
+// GetModel return model from cache
 func (s *Services) GetModel(id string) ([]byte, error) {
 	el, isExist := s.Cache[id]
 	if !isExist {
@@ -60,6 +63,7 @@ func (s *Services) GetModel(id string) ([]byte, error) {
 	return el, nil
 }
 
+// GetUpCache restores cache
 func (s *Services) GetUpCache() error {
 	var err error
 	s.Cache, err = s.repository.GetAllNote()

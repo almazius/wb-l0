@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// this script allows published models on stan
 func main() {
 	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
@@ -25,7 +26,7 @@ func main() {
 
 	fmt.Println("Hole id active!")
 	//hole("./hole", sc)
-	hole("./utils/publisher/hole", sc)
+	hole("utils/publisher/hole", sc)
 }
 
 func hole(path string, sc stan.Conn) {
@@ -43,6 +44,7 @@ func hole(path string, sc stan.Conn) {
 				if err != nil {
 					log.Println(err)
 				}
+				continue
 			}
 			buff, err := os.ReadFile(path + "/" + fileInfo.Name())
 			if err != nil {

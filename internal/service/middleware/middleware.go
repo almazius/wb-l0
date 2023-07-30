@@ -5,7 +5,8 @@ import (
 	"wb-l0/internal/service"
 )
 
-func CheckModel(body []byte) (string, error) {
+// ProcessModel check model and return OrderUid
+func ProcessModel(body []byte) (string, error) {
 	var model service.Model
 	err := json.Unmarshal(body, &model)
 	if err != nil {

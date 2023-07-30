@@ -18,6 +18,7 @@ type Nats struct {
 	Log     zerolog.Logger
 }
 
+// NewBroker Create entity service.Broker
 func NewBroker(conf *config.Config, services service.IServices) (service.Broker, error) {
 	Log := zerolog.New(os.Stderr)
 	nc, err := utils.TryConnectNats(conf, 15, &Log)
@@ -40,6 +41,7 @@ func NewBroker(conf *config.Config, services service.IServices) (service.Broker,
 	}, nil
 }
 
+// Subscribe is subscribe on topic and execute magicFunc
 func (n *Nats) Subscribe(topic string, magicFunc func(msg *stan.Msg)) error {
 	_, err := n.Conn.Subscribe(topic, magicFunc, stan.DurableName("almaz"))
 	if err != nil {
@@ -50,8 +52,9 @@ func (n *Nats) Subscribe(topic string, magicFunc func(msg *stan.Msg)) error {
 	return nil
 }
 
+// Handler process message from stan channel
 func (n *Nats) Handler(msg *stan.Msg) {
-	id, err := middleware.CheckModel(msg.Data)
+	id, err := middleware.ProcessModel(msg.Data)
 	if err != nil {
 		n.Log.Error().Timestamp().Err(err).Send()
 		return
